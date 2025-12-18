@@ -1,10 +1,20 @@
 import express from 'express';
 import connectDB from './src/config/conexaoDatabase.js';
 import User from './src/models/User.js';
+import swaggerUi from 'swagger-ui-express';
+import { createRequire } from 'module';
 
-const app = express()
-app.use(express.json())
-const port = 8080
+const require = createRequire(import.meta.url);
+const swaggerDocument = require('./swagger.json');
+
+// 1. PRIMEIRO VOCÊ CRIA O APP
+const app = express();
+
+// 2. DEPOIS VOCÊ USA O APP (Middlewares e Documentação)
+app.use(express.json());
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+const port = 8080;
 connectDB();
 
 
