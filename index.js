@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import connectDB from './src/config/conexaoDatabase.js';
 import User from './src/models/User.js';
 import swaggerUi from 'swagger-ui-express';
