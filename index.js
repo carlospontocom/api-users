@@ -10,6 +10,7 @@ const swaggerDocument = require('./swagger.json');
 
 // 1. PRIMEIRO VOCÊ CRIA O APP
 const app = express();
+app.use(cors());
 
 // 2. DEPOIS VOCÊ USA O APP (Middlewares e Documentação)
 app.use(express.json());
