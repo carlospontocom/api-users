@@ -19,7 +19,6 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const port = 8080;
 connectDB();
 
-
 //CRIANDO NOVO USER
 app.post("/usuarios", async (req, res) => {
     try {
