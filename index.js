@@ -8,10 +8,10 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const swaggerDocument = require('./swagger.json');
 
-// 1. PRIMEIRO VOCÊ CRIA O APP
 const app = express();
 
-// 2. DEPOIS VOCÊ USA O APP (Middlewares e Documentação)
+app.use(cors())
+
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
