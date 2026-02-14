@@ -29,3 +29,9 @@ Acesse em: [https://api-users-icyc.onrender.com](https://api-users-icyc.onrender
 
 ## Outras informações
 npm install swagger-ui-express
+
+### O QUE TEMOS?
+
+[x] rotas usuários = gep, post, put, delete
+[x] validação da senha com hash
+[x] frontend com o crud e conexao funcionando

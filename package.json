@@ -13,12 +13,18 @@
   "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "glob": "^13.0.3",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
     "mongoose": "^9.0.1",
     "nodemon": "^3.1.11",
+    "npm": "^11.10.0",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   }
 }

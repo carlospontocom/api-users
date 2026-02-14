@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -6,49 +8,38 @@ const userSchema = new Schema({
         type: String,
         required: true,
         minlength: [6, 'Nome do usuário deve ter 6 ou mais caracteres!'],
+        trim: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
-        match: [/^\S+@\S+\.\S+$/, 'Por favor, insira um email válido!']
+        match: [/^\S+@\S+\.\S+$/, 'Por favor, insira um email válido!'],
+        lowercase: true,
+        unique: true
     },
     senha: {
         type: String,
         required: true,
         minlength: [6, 'A senha deve ter 6 ou mais caracteres!']
-    },
-    cpf: {
-        type: String,
-        required: true,
-        unique: true,
-        match: [/^\d{11}$/, 'O CPF deve conter exatamente 11 dígitos numéricos!']
-    },
-    cep: {
-        type: String,
-        required: true,
-    },
-    logradouro: {
-        type: String,
-        required: true,
-    },
-    bairro: {
-        type: String,
-        required: true,
-    },
-    cidade: {
-        type: String,
-        required: true,
-    },
-    uf: {
-        type: String,
-        required: true,
-    },
-    complemento: {
-        type: String,
     }
+}, {
+    timestamps: true
 });
 
-const User = mongoose.model('User', userSchema);
+// Middleware para hash da senha
+userSchema.pre("save", async function () {
+    if (!this.isModified("senha")) {
+        return; // se não alterou a senha, não faz nada
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.senha = await bcrypt.hash(this.senha, salt);
+});
+
+// Método para comparar senha
+userSchema.methods.compararSenha = async function (senhaDigitada) {
+    return await bcrypt.compare(senhaDigitada, this.senha);
+};
+
+const User = mongoose.model("User", userSchema);
 
 export default User;
