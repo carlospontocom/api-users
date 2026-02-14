@@ -1,11 +1,10 @@
-import ModeloGestaoDados from "./componentes/Modelo-de-atualizar/ModeloGestaoDados"
-import Recriando from "./componentes/Modelo-de-atualizar/Recriando"
+import Paths from "./componentes/Routes/Paths.jsx";
 
 function App() {
 
   return (
     <>
-      <Recriando />
+      <Paths />
     </>
   )
 }
