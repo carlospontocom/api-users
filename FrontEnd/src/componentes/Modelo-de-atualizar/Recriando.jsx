@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import Campos from '../Campos/Campos';
 
 const Recriando = () => {
 
@@ -92,8 +93,6 @@ const Recriando = () => {
     }, [])
 
 
-
-
     //deletar 
     async function deletarUsuario(id) {
 
@@ -108,8 +107,6 @@ const Recriando = () => {
         }
     }
 
-
-
     //atualizar
     async function prepararEdicao(item) {
         setIdEditando(item._id);
@@ -120,20 +117,17 @@ const Recriando = () => {
     }
 
 
-
-
-
     return (
         <>
             <h3 className="text-center text-6xl py-8 font-bold">Gestão de usuário</h3>
 
-            <form className="flex flex-col gap-3 p-3" onSubmit={validarAndAdd}>
+            <form className="flex flex-col gap-3 p-3 max-w-xl mx-auto" onSubmit={validarAndAdd}>
                 <div>
                     <input type="text"
                         value={nome}
                         onChange={(e) => setNome(e.target.value)}
                         placeholder="Nome"
-                        className="p-3 border border-gray-400 w-full" />
+                        className="p-4 text-lg border border-gray-400 w-full" />
                 </div>
 
                 <div>
@@ -141,7 +135,7 @@ const Recriando = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email"
-                        className="p-3 text-lg border border-gray-400 w-full" />
+                        className="p-4 text-lg border border-gray-400 w-full" />
                 </div>
 
 
@@ -150,21 +144,23 @@ const Recriando = () => {
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
                         placeholder="Senha"
-                        className="p-3 text-lg border border-gray-400 w-full" />
+                        className="p-4 text-lg border border-gray-400 w-full" />
                 </div>
 
+                <Campos type="text" placeholder="Campo  text via props" onChange="teste" />
 
-                <button className="p-3 text-lg border border-gray-400 bg-green-400 max-w-[320px] cursor-pointer">Salvar</button>
+
+                <button className="p-4 text-lg border border-gray-400 bg-green-400 cursor-pointer">Salvar</button>
             </form>
 
             <section className="py-10 px-2">
-                <div className="flex flex-col gap-4 px-2 md:grid md:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-4 px-2 md:grid md:grid-cols-3 gap-4 mx-auto max-w-4xl">
                     {
                         usuarios.map(item => (
-                            <div key={item._id} className="shadow-md py-10 px-3 rounded-lg border border-gray-200 flex flex-col gap-1">
-                                <p>{item.nome}</p>
-                                <p>{item.email}</p>
-                                <div className="flex gap-3 mt-3">
+                            <div key={item._id} className="shadow-md py-10 px-3 rounded-lg border border-gray-200 flex flex-col gap-1 text-center">
+                                <p className="text-lg">{item.nome}</p>
+                                <p className="text-lg">{item.email}</p>
+                                <div className="flex gap-3 mt-3 justify-center">
                                     <button className="p-2 rounded-lg cursor-pointer bg-orange-400 text-white" onClick={() => prepararEdicao(item)}>Editar</button>
                                     <button className="p-2 rounded-lg cursor-pointer bg-red-600 text-white" onClick={() => deletarUsuario(item._id)}>Excluir</button>
                                 </div>

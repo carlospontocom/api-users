@@ -7,7 +7,7 @@ import User from './src/models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-//Para documentação do swagger
+// Para documentação do swagger
 import swaggerUi from 'swagger-ui-express';
 import { createRequire } from 'module';
 
@@ -25,7 +25,9 @@ const port = 8080;
 connectDB();
 
 
-// CRIAR USUÁRIO
+// ============================================
+// 📝 CRIAR USUÁRIO
+// ============================================
 app.post("/usuarios", async (req, res) => {
     try {
         const { nome, email, senha } = req.body;
@@ -49,7 +51,9 @@ app.post("/usuarios", async (req, res) => {
 });
 
 
-// BUSCAR TODOS
+// ============================================
+// 📋 BUSCAR TODOS OS USUÁRIOS
+// ============================================
 app.get("/usuarios", async (req, res) => {
     try {
         const users = await User.find();
@@ -59,7 +63,10 @@ app.get("/usuarios", async (req, res) => {
     }
 });
 
-// BUSCAR POR ID
+
+// ============================================
+// 🔍 BUSCAR USUÁRIO POR ID
+// ============================================
 app.get("/usuarios/:id", async (req, res) => {
     try {
         const searchId = req.params.id;
@@ -75,7 +82,10 @@ app.get("/usuarios/:id", async (req, res) => {
     }
 });
 
-// ATUALIZAR POR ID
+
+// ============================================
+// ✏️ ATUALIZAR USUÁRIO POR ID
+// ============================================
 app.put("/usuarios/:id", async (req, res) => {
     try {
         const searchId = req.params.id;
@@ -91,7 +101,10 @@ app.put("/usuarios/:id", async (req, res) => {
     }
 });
 
-// DELETAR POR ID
+
+// ============================================
+// 🗑️ DELETAR USUÁRIO POR ID
+// ============================================
 app.delete("/usuarios/:id", async (req, res) => {
     try {
         const searchId = req.params.id;
@@ -108,41 +121,86 @@ app.delete("/usuarios/:id", async (req, res) => {
 });
 
 
-
-
-// Rota de LOGIN
+// ============================================
+// 🔑 ROTA DE LOGIN
+// ============================================
+// ============================================
+// 🔑 ROTA DE LOGIN (VERSÃO FINAL CORRIGIDA)
+// ============================================
 app.post("/login", async (req, res) => {
     try {
         const { email, senha } = req.body;
 
-        const user = await User.findOne({ email: email.toLowerCase().trim() });
+        // Validação básica
+        if (!email || !senha) {
+            return res.status(400).json({
+                success: false,
+                message: "Email e senha são obrigatórios"
+            });
+        }
+
+        // Buscar usuário com senha (importante: .select('+senha'))
+        const user = await User.findOne({
+            email: email.toLowerCase().trim()
+        }).select('+senha');
+
+        // Usuário não encontrado
         if (!user) {
-            return res.status(401).json({ success: false, message: "E-mail ou senha inválidos" });
+            return res.status(401).json({
+                success: false,
+                message: "E-mail ou senha inválidos"
+            });
         }
 
-        const senhaValida = await bcrypt.compare(senha, user.senha);
+        // Comparar senha usando o método do schema
+        const senhaValida = await user.compararSenha(senha);
+
+        // Senha inválida
         if (!senhaValida) {
-            return res.status(401).json({ success: false, message: "E-mail ou senha inválidos" });
+            return res.status(401).json({
+                success: false,
+                message: "E-mail ou senha inválidos"
+            });
         }
 
+        // Gerar token JWT
         const token = jwt.sign(
-            { id: user._id, email: user.email },
-            "SEGREDO",
+            {
+                id: user._id,
+                email: user.email,
+                nome: user.nome
+            },
+            process.env.JWT_SECRET || "SEGREDO",
             { expiresIn: '1d' }
         );
 
-        const { senha: _, ...usuario } = user.toObject();
+        // Remover senha do objeto de retorno
+        const usuarioSemSenha = user.toObject();
+        delete usuarioSemSenha.senha;
+
+        // Sucesso!
         res.status(200).json({
             success: true,
-            usuario,
+            message: "Login realizado com sucesso!",
+            usuario: usuarioSemSenha,
             token
         });
 
     } catch (e) {
-        res.status(500).json({ success: false, erro: e.message });
+        console.error('❌ Erro no login:', e);
+        res.status(500).json({
+            success: false,
+            message: "Erro interno no servidor"
+        });
     }
 });
 
+
+// ============================================
+// 🚀 INICIAR SERVIDOR
+// ============================================
 app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
+    console.log(`✅ Servidor rodando na porta ${port}`);
+    console.log(`📚 Documentação Swagger: http://localhost:${port}/docs`);
+    console.log(`👥 Usuários: http://localhost:${port}/usuarios`);
 });
