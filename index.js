@@ -11,6 +11,9 @@ import jwt from 'jsonwebtoken';
 import swaggerUi from 'swagger-ui-express';
 import { createRequire } from 'module';
 
+//Para rota privativa - usuário logado
+import restringirAcesso from './src/Middlewares/MiddlewareAuth.js';
+
 const require = createRequire(import.meta.url);
 const swaggerDocument = require('./swagger.json');
 
@@ -79,20 +82,35 @@ app.get("/usuarios/:id", async (req, res) => {
 app.put("/usuarios/:id", async (req, res) => {
     try {
         const searchId = req.params.id;
-        const updated = await User.findByIdAndUpdate(searchId, req.body, { new: true });
 
-        if (!updated) {
-            return res.status(404).json({ message: "Usuário não atualizado" });
+        // Busca o usuário
+        const user = await User.findById(searchId);
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado" });
         }
 
-        res.status(200).json(updated);
+        // Atualiza campos permitidos
+        user.nome = req.body.nome ?? user.nome;
+        user.email = req.body.email ? req.body.email.toLowerCase().trim() : user.email;
+
+        // Se vier senha, atualiza
+        if (req.body.senha && req.body.senha.trim() !== '') {
+            user.senha = req.body.senha; // o hash será aplicado no pre-save
+        }
+
+        await user.save(); // dispara o pre-save para senha
+
+        const { senha: _, ...usuario } = user.toObject();
+        res.status(200).json(usuario);
+
     } catch (error) {
-        res.status(500).send({ message: "Erro interno na atualização" });
+        res.status(500).json({ message: "Erro interno na atualização", erro: error.message });
     }
 });
 
+
 // DELETAR POR ID
-app.delete("/usuarios/:id", async (req, res) => {
+app.delete("/usuarios/:id", restringirAcesso, async (req, res) => {
     try {
         const searchId = req.params.id;
         const deleted = await User.findByIdAndDelete(searchId);

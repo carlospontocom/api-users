@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Recriando from '../Modelo-de-atualizar/Recriando';
+import GestarDados from '../GestarDados/GestarDados';
+
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // 1. Busca o token e os dados do usuário salvos no login
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
 
-        // 2. Se não houver token, manda o usuário de volta para o login
         if (!token) {
             navigate('/login');
         } else if (userData) {
@@ -47,12 +47,12 @@ const Dashboard = () => {
                 </header>
 
                 <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                    <p className="text-gray-600">Este é o seu painel de controle privado.</p>
+                    <p className="text-gray-600">Painel de controle </p>
                     <p className="mt-2 font-mono text-sm text-green-600">Status: Autenticado via JWT</p>
                 </div>
-            </div>
 
-            <Recriando />
+                <GestarDados />
+            </div>
         </>
     );
 };

@@ -1,47 +1,170 @@
 {
-    "openapi": "3.0.0",
+    "openapi": "3.0.1",
     "info": {
         "title": "API de Usuários",
-        "version": "1.0.0",
-        "description": "Documentação da API de Usuários"
+        "description": "CRUD de usuários com autenticação JWT",
+        "version": "1.0.0"
     },
-    "tags": [
+    "servers": [
         {
-            "name": "Gerenciamento de usuários",
-            "description": "Operações para controle de usuários do sistema"
+            "url": "http://localhost:8080",
+            "description": "Servidor local"
         }
     ],
-    "paths": {
-        "/usuarios": {
-            "get": {
-                "tags": [
-                    "Gerenciamento de usuários"
-                ],
-                "summary": "Lista todos os usuários",
-                "responses": {
-                    "200": {
-                        "description": "Lista retornada com sucesso"
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string"
+                    },
+                    "nome": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
                     }
                 }
             },
+            "UserCreate": {
+                "type": "object",
+                "required": [
+                    "nome",
+                    "email",
+                    "senha"
+                ],
+                "properties": {
+                    "nome": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "senha": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Login": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "senha"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "senha": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Token": {
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean"
+                    },
+                    "usuario": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "token": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "paths": {
+        "/login": {
             "post": {
                 "tags": [
-                    "Gerenciamento de usuários"
+                    "Login"
                 ],
-                "summary": "Cadastra um novo usuário",
+                "summary": "Login do usuário",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Usuario"
+                                "$ref": "#/components/schemas/Login"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login bem-sucedido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "E-mail ou senha inválidos"
+                    }
+                }
+            }
+        },
+        "/usuarios": {
+            "get": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Listar todos os usuários",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuários",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Usuários"
+                ],
+                "summary": "Criar novo usuário",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserCreate"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Usuário criado com sucesso"
+                        "description": "Usuário criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Erro de validação"
@@ -52,9 +175,9 @@
         "/usuarios/{id}": {
             "get": {
                 "tags": [
-                    "Gerenciamento de usuários"
+                    "Usuários"
                 ],
-                "summary": "Busca usuário por ID",
+                "summary": "Buscar usuário por ID",
                 "parameters": [
                     {
                         "name": "id",
@@ -67,7 +190,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Usuário encontrado"
+                        "description": "Usuário encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Usuário não encontrado"
@@ -76,9 +206,14 @@
             },
             "put": {
                 "tags": [
-                    "Gerenciamento de usuários"
+                    "Usuários"
                 ],
-                "summary": "Atualiza usuário por ID",
+                "summary": "Atualizar usuário",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "id",
@@ -94,25 +229,40 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Usuario"
+                                "$ref": "#/components/schemas/UserCreate"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Usuário atualizado"
+                        "description": "Usuário atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Usuário não encontrado"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
                     }
                 }
             },
             "delete": {
                 "tags": [
-                    "Gerenciamento de usuários"
+                    "Usuários"
                 ],
-                "summary": "Deleta usuário por ID",
+                "summary": "Deletar usuário",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "id",
@@ -125,38 +275,15 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Usuário removido"
+                        "description": "Usuário deletado"
                     },
                     "404": {
                         "description": "Usuário não encontrado"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
                     }
                 }
-            }
-        }
-    },
-    "components": {
-        "schemas": {
-            "Usuario": {
-                "type": "object",
-                "properties": {
-                    "nome": {
-                        "type": "string",
-                        "example": "Carlos"
-                    },
-                    "email": {
-                        "type": "string",
-                        "example": "carlos@email.com"
-                    },
-                    "senha": {
-                        "type": "string",
-                        "example": "123456"
-                    }
-                },
-                "required": [
-                    "nome",
-                    "email",
-                    "senha"
-                ]
             }
         }
     }
