@@ -1,45 +1,75 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import { db } from "../config/conexaoDatabase.js";
+import bcrypt from "bcryptjs";
 
-const { Schema } = mongoose;
-
-const userSchema = new Schema({
-    nome: {
-        type: String,
-        required: true,
-        minlength: [6, 'Nome do usuário deve ter 6 ou mais caracteres!'],
-        trim: true
+const User = {
+    // criar usuário
+    async create({ nome, email, senha, perfilUsuario }) {
+        // ✅ hash feito aqui no model — NÃO fazer hash novamente no server.js
+        const hashedSenha = await bcrypt.hash(senha, 10);
+        const [result] = await db.query(
+            "INSERT INTO usuarios (nome, email, senha, perfilUsuario) VALUES (?, ?, ?, ?)",
+            [nome, email.toLowerCase().trim(), hashedSenha, perfilUsuario || "user"]
+        );
+        return { id: result.insertId, nome, email, perfilUsuario };
     },
-    email: {
-        type: String,
-        required: true,
-        match: [/^\S+@\S+\.\S+$/, 'Por favor, insira um email válido!'],
-        lowercase: true,
-        unique: true
+
+    // buscar todos (sem expor senha)
+    async findAll() {
+        const [rows] = await db.query(
+            "SELECT id, nome, email, perfilUsuario, criado_em FROM usuarios"
+        );
+        return rows;
     },
-    senha: {
-        type: String,
-        required: true,
-        minlength: [6, 'A senha deve ter 6 ou mais caracteres!']
-    }
-}, {
-    timestamps: true
-});
 
-// Middleware para hash da senha
-userSchema.pre("save", async function () {
-    if (!this.isModified("senha")) {
-        return; // se não alterou a senha, não faz nada
-    }
-    const salt = await bcrypt.genSalt(10);
-    this.senha = await bcrypt.hash(this.senha, salt);
-});
+    // buscar por ID (sem expor senha)
+    async findById(id) {
+        const [rows] = await db.query(
+            "SELECT id, nome, email, perfilUsuario, criado_em FROM usuarios WHERE id = ?",
+            [id]
+        );
+        return rows[0] || null; // ✅ retorna null explicitamente se não encontrar
+    },
 
-// Método para comparar senha
-userSchema.methods.compararSenha = async function (senhaDigitada) {
-    return await bcrypt.compare(senhaDigitada, this.senha);
+    // buscar por email — inclui senha para validação no login
+    async findByEmail(email) {
+        const [rows] = await db.query(
+            "SELECT * FROM usuarios WHERE email = ?",
+            [email.toLowerCase().trim()]
+        );
+        return rows[0] || null; // ✅ retorna null explicitamente se não encontrar
+    },
+
+    // atualizar
+    async update(id, { nome, email, senha }) {
+        const updates = [];
+        const values = [];
+
+        if (nome) {
+            updates.push("nome = ?");
+            values.push(nome);
+        }
+
+        if (email) {
+            updates.push("email = ?");
+            values.push(email.toLowerCase().trim());
+        }
+
+        if (senha) {
+            const hashed = await bcrypt.hash(senha, 10);
+            updates.push("senha = ?");
+            values.push(hashed);
+        }
+
+        if (updates.length === 0) return; // nada para atualizar
+
+        values.push(id);
+        await db.query(`UPDATE usuarios SET ${updates.join(", ")} WHERE id = ?`, values);
+    },
+
+    // deletar
+    async delete(id) {
+        await db.query("DELETE FROM usuarios WHERE id = ?", [id]);
+    }
 };
-
-const User = mongoose.model("User", userSchema);
 
 export default User;

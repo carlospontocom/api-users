@@ -1,29 +1,26 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Não esqueça de instalar: npm install axios
+import axios from 'axios';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [erro, setErro] = useState(''); // Para mostrar mensagens de erro na tela
+    const [erro, setErro] = useState('');
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setErro(''); // Limpa erros anteriores
+        setErro('');
 
         try {
-            // Chamada para a sua API na porta 8080
             const response = await axios.post('http://localhost:8080/login', {
                 email: email,
-                senha: password // Nome exato que sua API espera
+                senha: password
             });
 
             if (response.data.success) {
                 console.log("Logado com sucesso!", response.data);
 
-                // 1. Salva o Token no LocalStorage
                 localStorage.setItem('token', response.data.token);
 
-                // 2. Salva os dados básicos do usuário se precisar
                 localStorage.setItem('user', JSON.stringify(response.data.usuario));
 
                 alert(`Bem-vindo, ${response.data.usuario.nome}!`);
@@ -31,7 +28,6 @@ const Login = () => {
                 window.location.href = '/dashboard';
             }
         } catch (err) {
-            // Captura o erro da API (e-mail ou senha inválidos)
             const mensagemErro = err.response?.data?.message || "Erro ao conectar com o servidor";
             setErro(mensagemErro);
         }

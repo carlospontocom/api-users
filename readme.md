@@ -32,6 +32,8 @@ npm install swagger-ui-express
 
 ### O QUE TEMOS?
 
-[x] rotas usuários = gep, post, put, delete
-[x] validação da senha com hash
-[x] frontend com o crud e conexao funcionando
+[x] banco criado
+[x] modelo User para as funções
+[x] servidor para rotas
+
+[x] frontend para novo cadastro

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
     return (
-        <div className="bg-green-900 text-white shadown-lg">
+        <div className="bg-green-900 text-white shadown-lg fixed w-full">
             <nav className="flex justify-between px-3 max-w-5xl mx-auto py-5">
                 <h2 className="text-3xl font-bold">Front<span>API</span></h2>
                 <ul className="flex gap-8 text-[20px]">

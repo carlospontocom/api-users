@@ -1,16 +1,24 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import mysql from "mysql2/promise";
 
-dotenv.config();
+let db;
 
 const connectDB = async () => {
-    const uri = process.env.MONGODB_URI;
     try {
-        await mongoose.connect(uri, { dbName: 'bancoUsuarios' });
-        console.log("Conectado ao banco de dados...");
-    } catch (err) {
-        console.error("Erro de conexão:", err.message);
-    }
-}
+        db = await mysql.createPool({
+            host: "localhost",
+            user: "root",
+            password: "",
+            database: "bancoDadosBlog",
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
+        });
 
+        console.log("Conectado ao MySQL!");
+    } catch (error) {
+        console.error("Erro ao conectar ao MySQL:", error);
+    }
+};
+
+export { db };
 export default connectDB;

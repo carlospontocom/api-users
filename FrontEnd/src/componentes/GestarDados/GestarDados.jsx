@@ -89,7 +89,7 @@ const GestarDados = () => {
     // PREPARAR EDIÇÃO
     // =============================
     function prepararEdicao(item) {
-        setIdEditando(item._id);
+        setIdEditando(item.id);
         setNome(item.nome);
         setEmail(item.email);
         setSenha('');
@@ -179,7 +179,7 @@ const GestarDados = () => {
 
                     {usuarios.map(item => (
                         <div
-                            key={item._id}
+                            key={item.id}
                             className="shadow-md py-10 px-3 rounded-lg border border-gray-200 flex flex-col gap-1 text-center"
                         >
                             <p className="text-lg">{item.nome}</p>
@@ -195,7 +195,7 @@ const GestarDados = () => {
 
                                 <button
                                     className="p-2 rounded-lg cursor-pointer bg-red-600 text-white"
-                                    onClick={() => deletarUsuario(item._id)}
+                                    onClick={() => deletarUsuario(item.id)}
                                 >
                                     Excluir
                                 </button>

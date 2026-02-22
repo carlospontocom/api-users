@@ -14,3 +14,20 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+
+
+# O QUE TENHO ATÉ AQUI
+
+[x] tela cadastro
+[x] tela de login e logout funcionando
+[x] tela de gerenciamento de usuários (edição e exclusão)
+
+[x] Configuração de conexão com o banco de dados
+[x] Banco de dados MYSQL e tabelas no banco (usuarios, posts, categorias)
+[x] API de usuários (CRUD)
+[x] Restrição de acesso
+[x] Restrição de funções (edição e deleção - só para admin logados)
+
+[x] Funcionam: CRUD, RESTRIÇÕES E LOGIN

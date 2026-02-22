@@ -1,10 +1,10 @@
-import Paths from "./componentes/Routes/Paths.jsx";
+import ListaContatos from "./componentez/ListaContatos/ListaContatos"
 
 function App() {
 
   return (
     <>
-      <Paths />
+      <ListaContatos />
     </>
   )
 }
