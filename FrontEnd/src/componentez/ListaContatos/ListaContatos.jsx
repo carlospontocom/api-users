@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Button from '../Button/Button.jsx';
+import Campo from '../Campo/Campo.jsx';
 
 const ListaContatos = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -84,25 +86,23 @@ const ListaContatos = () => {
     );
 
     return (
-        <section className="relative">
+        <section className="relative px-3">
             <div className="max-w-6xl mx-auto px-2">
                 <h3 className="text-5xl text-center font-bold my-6">Lista de usuários</h3>
 
                 {/* Barra de adição e pesquisa */}
-                <div className="flex justify-between">
-                    <button
-                        onClick={formNovoContato}
-                        className="bg-blue-600 text-white px-6 py-4 rounded-md cursor-pointer"
-                    >
-                        Add
-                    </button>
-                    <input
+                <div className="grid grid-cols-2 gap-4">
+                    <Button labelButton="Novo usuário"
+                        bgcolor="bg-blue-500"
+                        onClick={formNovoContato} style={{ maxWidth: '200px' }} />
+
+                    <Campo
                         type="text"
-                        placeholder="Buscar por...."
-                        value={busca}
+                        placeholder="Buscar por..."
+                        value="busca"
                         onChange={(e) => setBusca(e.target.value)}
-                        className="border border-gray-400 rounded-lg py-4 px-2 w-[400px]"
                     />
+
                 </div>
 
                 {/* Lista filtrada */}
@@ -112,24 +112,24 @@ const ListaContatos = () => {
                             <div key={item.id} className="p-8 shadow-md border rounded-lg flex flex-col gap-2 items-center">
                                 <p className="font-semibold uppercase">{item.nome}</p>
                                 <p>{item.email}</p>
-                                <div className="flex gap-3">
-                                    <button
-                                        className="bg-gray-600 text-white px-8 py-2 rounded-sm"
+                                <div className="flex gap-3 mt-auto">
+
+                                    <Button bgcolor="bg-red-700"
+                                        icon="fas fa-trash"
+                                        labelButton="Excluir"
                                         onClick={() => deletarUsuario(item.id)}
-                                    >
-                                        Excluir
-                                    </button>
-                                    <button
-                                        className="bg-orange-500 text-white px-8 py-2 rounded-sm"
+                                    />
+
+                                    <Button bgcolor="bg-orange-400"
+                                        icon="fas fa-edit"
+                                        labelButton="Editar"
                                         onClick={() => openModalEditar(item)}
-                                    >
-                                        Editar
-                                    </button>
+                                    />
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p className="text-red-600 text-center col-span-3 font-semibold">
+                        <p className="text-red-600 text-center col-span-3 font-semibold text-[2rem]">
                             Nenhum usuário encontrado
                         </p>
                     )}
@@ -143,12 +143,16 @@ const ListaContatos = () => {
                         <h4 className="text-gray-100 text-3xl text-center pb-6">Atualizar dados</h4>
                         <form className="flex flex-col gap-4" onSubmit={salvarEdicao}>
                             <input type="text" name="nome" value={formData.nome} onChange={handleChange} placeholder="Nome" className="px-3 py-4 border rounded-md bg-white" />
+
                             <input type="text" name="email" value={formData.email} onChange={handleChange} placeholder="E-mail" className="px-3 py-4 border rounded-md bg-white" />
+
                             <input type="password" name="senha" value={formData.senha} onChange={handleChange} placeholder="Senha" className="px-3 py-4 border rounded-md bg-white" />
+
                             <div className="flex gap-2">
-                                <button type="submit" className="bg-blue-600 text-white px-6 py-4 rounded-md">Atualizar</button>
-                                <button type="button" className="bg-gray-600 text-white px-6 py-4 rounded-md" onClick={() => setModal(false)}>Cancelar</button>
+                                <Button labelButton="Atualizar" bgcolor="bg-blue-600" />
+                                <Button labelButton="Cancelar" onClick={() => setModal(false)} bgcolor="bg-gray-600" />
                             </div>
+
                         </form>
                     </div>
                 </div>
