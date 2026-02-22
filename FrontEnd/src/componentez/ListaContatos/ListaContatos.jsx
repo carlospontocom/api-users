@@ -103,6 +103,7 @@ const ListaContatos = () => {
                         onChange={(e) => setBusca(e.target.value)}
                     />
 
+
                 </div>
 
                 {/* Lista filtrada */}

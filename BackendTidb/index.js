@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import UsuarioModel from './src/models/UserModel.js';
+import bcrypt, { hash } from 'bcrypt';
 
 const app = express();
 const port = 3000;
@@ -24,7 +25,13 @@ app.post('/usuarios', async (req, res) => {
     try {
         const { nome, email, senha } = req.body;
         const id = await UsuarioModel.adicionar(nome, email, senha);
-        res.status(201).json({ id, nome, email });
+
+        res.status(201).json({
+            id,
+            nome,
+            email,
+            mensagem: "Usuário cadastrado com sucesso!"
+        });
     } catch (error) {
         res.status(500).json({ erro: error.message });
     }
@@ -62,6 +69,13 @@ app.delete('/usuarios/:id', async (req, res) => {
         res.status(500).json({ erro: error.message });
     }
 });
+
+// app.post('/login', async (req, res) => {
+//     const { email, senha } = req.body;
+//     const ok = await UserModel.validarLogin(email, senha);
+//     res.send(ok ? "Login OK" : "Senha incorreta");
+// });
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
